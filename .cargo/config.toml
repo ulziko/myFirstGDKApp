@@ -1,0 +1,10 @@
+# Tuning for the WASM frontend build (Step 3+).
+[build]
+# Keep compile times reasonable; offline not assumed.
+[target.wasm32-unknown-unknown]
+# wasm-opt is applied in the CI deploy step, not here.
+rustflags = [
+    "-C", "link-arg=-Oz",
+    "-C", "link-arg=--no-entry",
+    "-C", "link-arg=-s",
+]

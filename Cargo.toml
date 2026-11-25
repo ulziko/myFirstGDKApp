@@ -1,0 +1,21 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/shared",
+    "crates/frontend",
+    "api",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
