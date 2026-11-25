@@ -1,0 +1,15 @@
+[package]
+name = "portfolio-frontend"
+description = "Bevy 3D WebAssembly frontend for the developer portfolio (wasm32-unknown-unknown)."
+
+[dependencies]
+bevy = "0.18"
+portfolio-shared = { path = "../shared" }
+serde = { version = "1", features = ["derive"] }
+
+[target.'cfg(target_arch = "wasm32-unknown-unknown")'.dependencies]
+# No extra crates required yet; bevy pulls in wasm-bindgen / web-sys / wgpu wasm backends.
+
+[[bin]]
+name = "portfolio-frontend"
+path = "src/main.rs"

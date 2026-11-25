@@ -41,29 +41,29 @@ async fn contact_handler(req: Request) -> Result<Response<Body>, Error> {
 }
 
 /// Field-level validation and basic anti-spam heuristics.
-/// Returns `Ok(())` when valid, or an error response when invalid.
-fn validate(payload: &ContactPayload) -> Result<(), Error> {
+/// Returns `Ok(())` when valid, or an `ApiError` when invalid.
+fn validate(payload: &ContactPayload) -> Result<(), ApiError> {
     if payload.name.trim().is_empty() {
-        return error_response(400, ApiError::bad_request("name is required"));
+        return Err(ApiError::bad_request("name is required"));
     }
     if payload.name.len() > 200 {
-        return error_response(400, ApiError::bad_request("name is too long"));
+        return Err(ApiError::bad_request("name is too long"));
     }
     if payload.email.trim().is_empty() {
-        return error_response(400, ApiError::bad_request("email is required"));
+        return Err(ApiError::bad_request("email is required"));
     }
     if !is_valid_email(&payload.email) {
-        return error_response(400, ApiError::bad_request("a valid email is required"));
+        return Err(ApiError::bad_request("a valid email is required"));
     }
     if payload.message.trim().is_empty() {
-        return error_response(400, ApiError::bad_request("message is required"));
+        return Err(ApiError::bad_request("message is required"));
     }
     if payload.message.len() > MAX_MESSAGE_LEN {
-        return error_response(400, ApiError::bad_request("message is too long"));
+        return Err(ApiError::bad_request("message is too long"));
     }
     // Crude anti-spam: reject obvious link-dumping.
     if link_density(&payload.message) > 0.5 {
-        return error_response(400, ApiError::bad_request("message contains too many links"));
+        return Err(ApiError::bad_request("message contains too many links"));
     }
     Ok(())
 }

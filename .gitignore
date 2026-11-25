@@ -1,0 +1,29 @@
+# Rust
+target/
+**/*.rs.bak
+Cargo.lock
+
+# WASM / frontend output (staged by CI into public/ or static/)
+public/
+static/
+*.wasm
+*.wat
+
+# Environment files (never commit real secrets)
+.env
+.env.local
+.env.production
+*.env.*
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Goose / app scaffolding artifacts (not part of the portfolio build)
+gooseprompt.txt
+.app_builder.yaml
+.goosehints

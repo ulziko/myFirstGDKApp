@@ -1,0 +1,73 @@
+{
+  "version": 2,
+  "name": "portfolio",
+  "description": "Bevy 3D WASM frontend + Rust serverless API (Vercel via Git)",
+  "framework": null,
+
+  "builds": [
+    { "src": "package.json", "use": "@vercel/static-build" }
+  ],
+
+  "functions": {
+    "api/health": {
+      "runtime": "vercel_runtime@2.4.1",
+      "binary": "api/target/release/health"
+    },
+    "api/portfolio": {
+      "runtime": "vercel_runtime@2.4.1",
+      "binary": "api/target/release/portfolio"
+    },
+    "api/contact": {
+      "runtime": "vercel_runtime@2.4.1",
+      "binary": "api/target/release/contact"
+    }
+  },
+
+  "routes": [
+    { "src": "/api/health", "dest": "/api/health" },
+    { "src": "/api/portfolio", "dest": "/api/portfolio" },
+    { "src": "/api/contact", "methods": ["POST"], "dest": "/api/contact" },
+
+    {
+      "src": "/(.*\\.wasm)$",
+      "headers": { "Content-Type": "application/wasm" },
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*\\.wat)$",
+      "headers": { "Content-Type": "application/wasm" },
+      "dest": "/public/$1"
+    },
+    { "src": "/(.+\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|otf|json|txt|map))$", "dest": "/public/$1" },
+
+    { "src": "/(.*)", "dest": "/public/index.html", "status": 200 }
+  ],
+
+  "headers": [
+    {
+      "src": "/(.*)",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "no-referrer"
+      }
+    },
+    {
+      "src": "/.*\\.wasm",
+      "headers": {
+        "Content-Type": "application/wasm",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/api/portfolio",
+      "headers": { "Cache-Control": "public, max-age=60, stale-while-revalidate=300" }
+    },
+    {
+      "src": "/api/health",
+      "headers": { "Cache-Control": "no-store" }
+    }
+  ],
+
+  "cleanUrls": true,
+  "trailingSlash": false
+}
