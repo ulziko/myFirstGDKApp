@@ -1,0 +1,37 @@
+Build my personal developer portfolio website using a **Bevy 3D frontend** (compiled to WebAssembly `wasm32-unknown-unknown`) and a **Rust backend** deployed on **Vercel via Git**
+
+### Reference Structure & Section Architecture (00–08)
+Implement the site around this exact 9-section structure, accessible via top/side navigation, keyboard shortcuts/clicks, or camera focus inside the 3D scene:
+- **00 — Home (`#home`):** Terminal/hero intro (`$ whoami`), headline, location/status badges, quick CTAs (`View work` / `Get in touch`), résumé download action, and live status/telemetry strip (status, build/version, active status).
+- **01 — About (`#about`):** Windowed/card panel (`01 — about`) with bio, background, and shift toward systems/agentic architecture.
+- **03 — Stack (`#stack`):** Categorized/tagged technical stack (languages, frameworks, cloud/hosting, tooling, platforms).
+- **05 — Projects (`#projects`):** Featured projects showcase (description, tech/platform context, links/demos) synchronized with 3D focus targets in the Bevy scene.
+- **07 — Contact (`#contact`):** Direct contact info/links (email, messaging/socials, location) and an interactive contact form (`name`, `email`, `message`) that submits to the Rust serverless backend.
+- **08 — Elsewhere (`#elsewhere`):** External ventures, agencies, or related sites with direct links, followed by a compact footer/marquee status bar.
+
+### 3D Bevy Frontend + HTML/CSS Windowed HUD + Rust Backend
+1. `crates/shared`: Shared `serde` types (`SectionId`, `PortfolioData`, `ProjectEntry`, `ExperienceEntry`, `CertificationEntry`, `BuildLogEntry`, `ContactPayload`, `ApiError`) used by both the WASM frontend and Rust API functions.
+2. `crates/frontend` (Bevy 3D -> `wasm32-unknown-unknown`):
+   - Renders a sleek 3D scene (e.g., an interactive dark/grid spatial stage, floating data nodes/monoliths representing sections `00`–`08` and featured projects, subtle lighting, and a matrix/particle/grid backdrop with user-adjustable speed/density/opacity/reduced-motion controls).
+   - Smoothly animates camera orbit/focus when selecting a section (`00`–`08`) or project, while keeping text crisp and readable via an HTML/CSS windowed HUD overlay (with minimize/close/reopen or section focus controls) so dense info like Experience, Certifications, and Contact is effortless to read and select.
+   - Includes a fallback/low-power mode (`reduced-motion` / lightweight rendering) for mobile or lower-end GPUs.
+3. `api/` (Vercel Rust Serverless Functions via `vercel_runtime`):
+   - `api/portfolio.rs`: Returns structured portfolio data (`00`–`08` content, projects, experience, certifications, build log entries) from embedded/structured config.
+   - `api/contact.rs`: Validates `ContactPayload`, enforces basic anti-spam/field checks, sends email/webhook notification using environment variables (e.g., SMTP/Resend/webhook via `reqwest` or configured mailer), and returns structured JSON responses.
+   - `api/health.rs`: Lightweight health check endpoint.
+4. `vercel.json` & `.github/workflows/deploy.yml`:
+   - Configure `vercel.json` for static WASM/asset delivery (`application/wasm` header, caching, SPA routing) and `/api/*` serverless routing.
+   - Configure GitHub Actions to run Rust tests, build the Bevy WASM bundle (`wasm32-unknown-unknown` + `wasm-opt`), stage static files, and deploy to Vercel on `git push` to `main` so Vercel doesn't time out compiling Rust/Bevy from scratch.
+
+### Engineering & Verification Gates
+- Run `cargo check --workspace`, `cargo test -p shared`, and `cargo check -p frontend --target wasm32-unknown-unknown` after writing code; fix warnings and WASM-incompatible calls.
+- Never commit secrets; provide `.env.example` and document all Vercel & GitHub secrets/variables in `README.md`.
+- Do not fabricate personal claims—use clean placeholder/structured portfolio entries clearly marked where my personal details should be filled in, and wire the structure so swapping content is straightforward.
+
+### Execution Order
+1. **Scaffold & Shared Types:** Create the Cargo workspace, `crates/shared`, `api/` serverless crate setup, `vercel.json`, `.gitignore`, and `.env.example`.
+2. **Rust Serverless Endpoints:** Implement `api/health.rs`, `api/portfolio.rs`, and `api/contact.rs` with unit tests for validation and serialization.
+3. **Bevy 3D Scene + `00`–`08` Windowed UI:** Build the Bevy 3D scene, camera focus transitions, visual effect controls (speed/density/opacity/reduced-motion), and the `00`–`08` section panels + contact form.
+4. **GitHub Actions + README:** Add `.github/workflows/deploy.yml`, verify all compile/test gates, and write clear setup instructions in `README.md` for local dev and Vercel Git deploys.
+
+Start with Step 1 and Step 2 now.
